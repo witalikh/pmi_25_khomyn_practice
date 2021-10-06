@@ -21,13 +21,13 @@ class InputManager:
         """
         self.messages = messages
 
-    def input_size(self, message):
+    def input_size(self):
         """
         Function managing size input details
         :return: valid size
         """
 
-        print(message)
+        print(self.messages.size_input)
         while True:
             size = input()
             try:
@@ -55,7 +55,7 @@ class InputManager:
 
     def input_list(self, size: int):
         """
-        Function managing list elements input
+        Function managing linked list elements input
         :param size: size to be supposed in list
         :return: valid list of values
         """
@@ -108,8 +108,8 @@ class InputManager:
                 return value
 
 
-class QueriesThread:
-    """ Class responsible for managing sequent queries """
+class MainQueriesThread:
+    """ Class responsible for managing main sequent queries """
 
     def __init__(self, messages: InterfaceMessages):
         """
@@ -138,14 +138,46 @@ class QueriesThread:
                 print()
         print()
 
-    def erase_list_warning(self):
+    def side_menu_choice(self, message, *args):
         """
-        Helper method for printing list before total erase
+        Helper method for side menu choices
+        :param message: message to print
+        :param args: choices to choose
+        :return: choice from args
+        """
+        while True:
+            try:
+                query = int(input(message))
+            except ValueError:
+                print(self.messages.wrong_query)
+            else:
+                if 0 <= query < len(args):
+                    return args[query]
+                else:
+                    print(self.messages.wrong_query)
+
+    def erase_list_process_choice(self):
+        """
+        Helper method for printing list before total erase and total erase if needed
         :return:
         """
-        if len(self.linked_list):
-            self.print_list(self.messages.erase_list)
-        print()
+        # asking whether preserve list
+        list_action = self.side_menu_choice(self.messages.list_preservation_choices,
+                                            None, 1, 2)
+
+        # exit immediately with no action
+        if not list_action:
+            return False
+
+        # erase list if necessary
+        elif list_action == 1:
+            # warn user about that
+            if len(self.linked_list):
+                self.print_list(self.messages.erase_list)
+
+            self.linked_list = LinkedList()
+
+        return True
 
     def query_0(self):
         """
@@ -162,51 +194,42 @@ class QueriesThread:
 
     def query_2(self):
         """
-        Managing manual list input
+        Managing manual list input and overwrite or extend initial list
         """
 
-        self.erase_list_warning()
+        outcome = self.erase_list_process_choice()
+        if not outcome:
+            return
 
-        size = self.io_manager.input_size(self.messages.size_input_replace)
-        self.linked_list = self.io_manager.input_list(size)
+        size = self.io_manager.input_size()
+        self.linked_list.extend(self.io_manager.input_list(size))
 
         self.print_list(self.messages.list_result)
 
     def query_3(self):
         """
-        Generating random list via iterator and overwrite initial list
+        Generating random list and overwrite or extend initial list
         """
+        outcome = self.erase_list_process_choice()
+        if not outcome:
+            return
 
-        self.erase_list_warning()
+        # ask for generating way
+        generating_way = self.side_menu_choice(self.messages.generator_choices,
+                                               None, GeneratingIterator, generate_values)
 
-        size = self.io_manager.input_size(self.messages.size_input_replace)
-        range_of_floats = self.io_manager.input_range()
+        if generating_way:
+            # input values
+            size = self.io_manager.input_size()
+            range_of_floats = self.io_manager.input_range()
 
-        result = LinkedList()
-        iterator = GeneratingIterator(size, *range_of_floats, default_source=self.random_source)
+            # iterator and generator are uniform signatures and behaviour
+            generating_object = generating_way(size, *range_of_floats, default_source=self.random_source)
 
-        # iter_obj = iter(iterator)
-        # for i in range(size):
-        #    result.append(next(iterator))
-        result.extend(iterator)
-
-        self.linked_list = result
-        self.print_list(self.messages.list_result)
+            self.linked_list.extend(generating_object)
+            self.print_list(self.messages.list_result)
 
     def query_4(self):
-        """
-        Generating random list via yield-generator and extend it
-        """
-
-        size = self.io_manager.input_size(self.messages.size_input_extend)
-        range_of_floats = self.io_manager.input_range()
-
-        gen_obj = generate_values(size, *range_of_floats, default_source=self.random_source)
-
-        self.linked_list.extend(gen_obj)
-        self.print_list(self.messages.list_output)
-
-    def query_5(self):
         """
         Insert a node into k-th place
         :return:
@@ -221,7 +244,7 @@ class QueriesThread:
         self.linked_list.insert(index - 1, element)
         self.print_list(self.messages.list_output)
 
-    def query_6(self):
+    def query_5(self):
         """
         Delete some node in k-th index from list
         :return:
@@ -236,7 +259,7 @@ class QueriesThread:
         print(self.messages.deleted_output(deleted_value))
         self.print_list(self.messages.list_output)
 
-    def query_7(self):
+    def query_6(self):
         """
         Counting unique values and showing the result
         :return:
@@ -249,7 +272,7 @@ class QueriesThread:
         Wrong query sent
         :return:
         """
-        print(self.messages.wrong_query, "\n", self.messages.menu_choices)
+        print(self.messages.wrong_query, "\n", self.messages.menu_choices, sep='')
 
     def process_query(self, query: int):
         """
@@ -258,7 +281,7 @@ class QueriesThread:
         :return: actions
         """
         queries = (self.query_0, self.query_1, self.query_2, self.query_3,
-                   self.query_4, self.query_5, self.query_6, self.query_7,
+                   self.query_4, self.query_5, self.query_6,
                    self.wrong_query)
 
         if 0 <= query < len(queries) - 1:

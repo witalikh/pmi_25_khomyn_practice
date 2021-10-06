@@ -1,51 +1,12 @@
 class InterfaceMessages:
     """ Class for Interface Messages storing """
 
-    def __init__(self, greeting, menu_choices,
-                 query_input, wrong_query,
-                 exit_message,
-                 list_input, list_result,
-                 list_previous_output, list_output, list_size_mismatch,
-                 size_input_replace, size_input_extend, wrong_size,
-                 range_input, wrong_range,
-                 index_input, wrong_index,
-                 element_input, wrong_element,
-                 deleted_output,
-                 task_output, erase_list
-                 ):
+    def __init__(self, **kwargs):
         """
         Initializes InterfaceMessages object for convenience
         """
-        self.greeting = greeting
-        self.menu_choices = menu_choices
-
-        self.query_input = query_input
-        self.wrong_query = wrong_query
-        self.exit_message = exit_message
-
-        self.list_input = list_input
-        self.list_result = list_result
-        self.list_previous_output = list_previous_output
-        self.list_output = list_output
-        self.list_size_mismatch = list_size_mismatch
-
-        self.size_input_replace = size_input_replace
-        self.size_input_extend = size_input_extend
-        self.wrong_size = wrong_size
-
-        self.range_input = range_input
-        self.wrong_range = wrong_range
-
-        self.index_input = index_input
-        self.wrong_index = wrong_index
-
-        self.element_input = element_input
-        self.wrong_element = wrong_element
-
-        self.deleted_output = deleted_output
-        self.task_output = task_output
-
-        self.erase_list = erase_list
+        for key, value in kwargs.items():
+            self.__setattr__(key, value)
 
 
 def prepare_messages():
@@ -62,18 +23,32 @@ def prepare_messages():
             "Виберіть одну з доступних опцій: \n"
             "0. Вийти з програми. \n"
             "1. Показати список. \n"
-            "2. Ввести власноруч список дійсних чисел. \n"
-            "3. Згенерувати заново (ітератором) список випадкових дійсних чисел заданого діапазону. \n"
-            "4. Догенерувати (генератором) наперед дійсні числа заданого діапазону. \n"
-            "5. Додати елемент в k-тий елемент списку власноруч. \n"
-            "6. Вилучити зі списку k-тий елемент.\n"
-            "7. Порахувати кількість унікальних входжень в списку.",
+            "2. Ввести власноруч список дійсних чисел, заново або доповнивши. \n"
+            "3. Згенерувати заново або догенерувати (ітератором/генератором) \n"
+            "   список випадкових дійсних чисел заданого діапазону. \n"
+            "4. Додати елемент в k-тий елемент списку власноруч. \n"
+            "5. Вилучити зі списку k-тий елемент.\n"
+            "6. Порахувати кількість унікальних входжень в списку.",
+
+        "list_preservation_choices":
+            "Виберіть дію зі списком: \n"
+            "0. Нічого не робити, вийти. \n"
+            "1. Стерти попередній список, якщо він є. \n"
+            "2. Доповнити попередній список. \n"
+            "Якщо попередній список відсутній, опції 1 і 2 просто створять новий.\n",
+
+        "generator_choices":
+            "Виберіть спосіб генерації: \n"
+            "0. Не генерувати, вийти. \n"
+            "1. Ітераторним класом. \n"
+            "2. Генераторною функцією. \n",
+
 
         "query_input":
             lambda number: f"[{number}]: ",
 
         "wrong_query":
-            "Даний запит некоректний. Будь-ласка, повторіть ще раз!",
+            "Даний запит некоректний. Будь-ласка, повторіть ще раз!\n",
 
         "exit_message":
             "Програма завершує свою роботу. До побачення!",
@@ -94,17 +69,14 @@ def prepare_messages():
             f"Деякі з введених Вами дані є записані у список. \n"
             f"Однак очікується, що Ви введете ще таку кількість коректних дійсних чисел: {missing}",
 
-        "size_input_replace":
-            "Введіть розмір списку (ціле число більше нуля), який повинен бути в результаті.",
-
-        "size_input_extend":
-            "Введіть кількість елементів (ціле число більше нуля), щоб доповнити ними список.",
+        "size_input":
+            "Введіть розмір списку (ціле число більше нуля), який ви хочете ввести в результуючий.",
 
         "wrong_size":
             "Введені Вами дані не може бути розмірністю списку. \n",
 
         "range_input":
-            "Введіть два числа a, b (a <= b) - діапазон для випадково згенерованих чисел.\n",
+            "Введіть два числа a, b (a <= b) - діапазон для випадково згенерованих чисел.",
 
         "wrong_range":
             "Введені Вами дані є некоректного типу або формату. \n"
